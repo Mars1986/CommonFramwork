@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project name="CommonFramework" default="dist" basedir=".">
+    
+	<property file="build.cfg" />
+	<property name="dist.dir"  value="dist" />
+	<property name="src.dir"   value="src" />
+	<property name="build.dir" value="bin" />
+	<property name="lib.dir"   value="libs"/>
+	
+	<property environment="env" />
+    <condition property="sdk.dir" value="${env.ANDROID_HOME}">
+        <isset property="env.ANDROID_HOME" />
+    </condition>
+    
+	<property name="sdk.platformjar" value="${sdk.dir}/platforms/android-19" />
+	
+	<target name="jar" >
+	    <echo message="${sdk.platformjar}/android.jar"/>
+		<unzip src="${lib.dir}/gson-2.2.4.jar" dest="${build.dir}">  
+		<patternset>  
+		<exclude name="META-INF"/>  
+		<exclude name="META-INF/MANIFEST.MF"/>  
+		</patternset>  
+		</unzip>  
+		<unzip src="${lib.dir}/ormlite-android-4.48.jar" dest="${build.dir}">  
+		<patternset>  
+		<exclude name="META-INF"/>  
+		<exclude name="META-INF/MANIFEST.MF"/>  
+		</patternset>  
+		</unzip> 
+		<unzip src="${lib.dir}/ormlite-core-4.48.jar" dest="${build.dir}">  
+		<patternset>  
+		<exclude name="META-INF"/>  
+		<exclude name="META-INF/MANIFEST.MF"/>  
+		</patternset>  
+		</unzip> 
+	</target>
+
+	<target name="dist" depends="clean,jar,package" />
+
+	<target name="clean">
+		<delete dir="${build.dir}" />
+		<delete dir="${dist.dir}" />
+	</target>
+
+	<target name="init">
+		<mkdir dir="${build.dir}"/>
+		<mkdir dir="${dist.dir}" />
+	</target>
+
+	<path id="Android 4.4.2.libraryclasspath">
+		<pathelement location="${sdk.platformjar}/android.jar"/>
+	</path>
+
+	<path id="classpath">
+		<path refid="Android 4.4.2.libraryclasspath"/>
+		<fileset dir="${lib.dir}" includes="**/*.jar"/>
+		
+	</path>
+    
+	<target name="compile">
+    		<javac srcdir="${src.dir}" destdir="${build.dir}" source="1.5" target="1.5" classpathref="classpath" debug="off" includeantruntime="on" />
+	</target>
+		
+	<target name="package" depends="init, compile">
+	    <xmlproperty file="AndroidManifest.xml" prefix="themanifest" collapseAttributes="true" />
+		<jar destfile="${dist.dir}/CommonFramework-${themanifest.manifest.android:versionName}.jar" basedir="${build.dir}"/>
+	</target>
+</project>
+
