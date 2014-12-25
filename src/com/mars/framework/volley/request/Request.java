@@ -19,7 +19,13 @@ package com.mars.framework.volley.request;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.message.BasicNameValuePair;
 
 import android.net.TrafficStats;
 import android.net.Uri;
@@ -607,5 +613,21 @@ public abstract class Request<T> implements Comparable<Request<T>> {
         String trafficStatsTag = "0x" + Integer.toHexString(getTrafficStatsTag());
         return (mCanceled ? "[X] " : "[ ] ") + getUrl() + " " + trafficStatsTag + " "
                 + getPriority() + " " + mSequence;
+    }
+
+    protected static String getUrlWithQueryString(String url, Map<String, String> params) {
+        if (!TextUtils.isEmpty(url) && params != null && params.size() != 0) {
+            List<BasicNameValuePair> paramsList = new LinkedList<BasicNameValuePair>();
+            for (ConcurrentHashMap.Entry<String, String> entry : params.entrySet()) {
+                paramsList.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
+            }
+            String paramsString = URLEncodedUtils.format(paramsList, DEFAULT_PARAMS_ENCODING);
+            if (url.indexOf("?") == -1) {
+                url += "?" + paramsString;
+            } else {
+                url += "&" + paramsString;
+            }
+        }
+        return url;
     }
 }

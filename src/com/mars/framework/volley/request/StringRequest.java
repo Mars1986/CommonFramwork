@@ -18,19 +18,10 @@ package com.mars.framework.volley.request;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.message.BasicNameValuePair;
-
-import android.text.TextUtils;
 
 import com.mars.framework.volley.error.AuthFailureError;
 import com.mars.framework.volley.net.HttpHeaderParser;
-import com.mars.framework.volley.request.Request.Method;
 import com.mars.framework.volley.response.NetworkResponse;
 import com.mars.framework.volley.response.Response;
 import com.mars.framework.volley.response.Response.ErrorListener;
@@ -41,9 +32,6 @@ import com.mars.framework.volley.response.Response.Listener;
  */
 public class StringRequest extends Request<String> {
 	
-	 /** Charset for request. */
-    private static final String PROTOCOL_CHARSET = "utf-8";
-    
     private HashMap<String, String> params;
     
     private final Listener<String> mListener;
@@ -111,26 +99,4 @@ public class StringRequest extends Request<String> {
         return Response.success(parsed, HttpHeaderParser.parseCacheHeaders(response));
     }
     
-    /**
-     * 根据参数凭借Url地址用于Get请求
-     *
-     * @param url
-     * @param params
-     * @return
-     */
-    private static String getUrlWithQueryString(String url, Map<String, String> params) {
-        if (!TextUtils.isEmpty(url) && params != null && params.size() != 0) {
-            List<BasicNameValuePair> paramsList = new LinkedList<BasicNameValuePair>();
-            for (ConcurrentHashMap.Entry<String, String> entry : params.entrySet()) {
-                paramsList.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
-            }
-            String paramsString = URLEncodedUtils.format(paramsList, PROTOCOL_CHARSET);
-            if (url.indexOf("?") == -1) {
-                url += "?" + paramsString;
-            } else {
-                url += "&" + paramsString;
-            }
-        }
-        return url;
-    }
 }
